@@ -20,7 +20,7 @@ public class PreferencesManager
 	// Preferences strings
 	private final String PREFERENCES_NAME = "vaultPreferences";
 	private final String PREF_PASSWORD = "vaultPassword";
-	private final String PREF_PASSWORD_HINT = "vaultPasswordHint";
+	//private final String PREF_PASSWORD_HINT = "vaultPasswordHint";
 	private final String PREF_SECRET_QUESTION = "vaultSecretQuestion";
 	private final String PREF_SECRET_ANSWER = "vaultSecretAnswer";	
 	
@@ -113,10 +113,10 @@ public class PreferencesManager
 	 * 
 	 * @return String with the user password hint
 	 */
-	public String getPasswordHint()
+	/*public String getPasswordHint()
 	{
 		return getPreferences().getString(PREF_PASSWORD_HINT, "");
-	}
+	}*/
 	
 	/**
 	 * This function sets a password hint in preferences file.
@@ -125,7 +125,7 @@ public class PreferencesManager
 	 * 
 	 * @param hint String with the password hint
 	 */
-	public void setPasswordHint(String hint)
+	/*public void setPasswordHint(String hint)
 	{
 		// Create SharedPreferences editor
 		Editor editor = getPreferences().edit();
@@ -133,7 +133,7 @@ public class PreferencesManager
 		editor.putString(PREF_PASSWORD_HINT, hint);
 		// Commit changes
 		editor.commit();
-	}
+	}*/
 	
 	/**
 	 * Function to get the user Vault secret question. 
@@ -177,7 +177,8 @@ public class PreferencesManager
 	}
 	
 	/**
-	 * This function sets the secret answer in preferences file.
+	 * This function sets the secret answer in preferences file. It is converted
+	 * to SHA1.
 	 * 
 	 * @author Reaper
 	 * 
@@ -185,12 +186,30 @@ public class PreferencesManager
 	 */
 	public void setSecretAnswer(String answer)
 	{
-		// Create SharedPreferences editor
-		Editor editor = getPreferences().edit();
-		// Set question field value
-		editor.putString(PREF_SECRET_ANSWER, answer);
-		// Commit changes
-		editor.commit();
+		try
+		{
+			// Generate SHA1 value of the password
+			MessageDigest digester = MessageDigest.getInstance("SHA-1");
+			digester.reset();
+			byte[] sha1hash = digester.digest(answer.getBytes());
+			
+			String enc_anser = convertToHex(sha1hash);
+			
+			// Create SharedPreferences editor
+			Editor editor = getPreferences().edit();
+			// Set question field value
+			editor.putString(PREF_SECRET_ANSWER, enc_anser);
+			// Commit changes
+			editor.commit();
+		} 
+		catch (NoSuchAlgorithmException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/* Aux. functions */
@@ -211,5 +230,103 @@ public class PreferencesManager
 		hex = Base64.encodeToString(data, 0, data.length, 0);    
 		sb.append(hex);                
 		return sb.toString();
+	}
+	
+	/**
+	 * This function checks if the given password (not hashed) matches the
+	 * saved one.
+	 * 
+	 * @author Reaper
+	 * 
+	 * @param pwd String with an unhashed password
+	 * @return Boolean indicating if the given password is a valid one
+	 */
+	public boolean checkPassword(String pwd)
+	{
+		// Get stored password
+		String stored_pwd = getPassword();
+		
+		// If password hasn't been set, return false for security reasons
+		if (stored_pwd.equals(""))
+		{
+			return false;
+		}
+		
+		// Convert the given string to SHA1 and check
+		try
+		{
+			// Generate SHA1 value of the password
+			MessageDigest digester = MessageDigest.getInstance("SHA-1");
+			digester.reset();
+			byte[] sha1hash = digester.digest(pwd.getBytes());
+			
+			String enc_pwd = convertToHex(sha1hash);
+			
+			// Check passwords
+			if (enc_pwd.equals(stored_pwd))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		} 
+		catch (NoSuchAlgorithmException e) 
+		{
+			e.printStackTrace();
+			return false;
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * This function checks if the given secret answer (not hashed) matches the
+	 * saved one.
+	 * 
+	 * @author Reaper
+	 * 
+	 * @param pwd String with an unhashed secret answer
+	 * @return Boolean indicating if the given anser is a valid one
+	 */
+	public boolean checkSecretAnswer(String answer)
+	{
+		// Get stored answer
+		String stored_answer = getSecretAnswer();
+		
+		// Convert the given string to SHA1 and check
+		try
+		{
+			// Generate SHA1 value of the answer
+			MessageDigest digester = MessageDigest.getInstance("SHA-1");
+			digester.reset();
+			byte[] sha1hash = digester.digest(answer.getBytes());
+			
+			String enc_answer = convertToHex(sha1hash);
+			
+			// Check passwords
+			if (enc_answer.equals(stored_answer))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		} 
+		catch (NoSuchAlgorithmException e) 
+		{
+			e.printStackTrace();
+			return false;
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
