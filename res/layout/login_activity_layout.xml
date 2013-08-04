@@ -138,7 +138,8 @@
    	<Button
    	    android:id="@+id/login_forgot_button"
 		android:layout_width="wrap_content"
-		android:layout_height="30dip"
+		android:padding="5dip"
+		android:layout_height="50dip"
 		android:layout_marginLeft="10dip"
 		android:layout_marginRight="20dip"
 		android:layout_marginTop="25dip"

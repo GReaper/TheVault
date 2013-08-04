@@ -7,17 +7,26 @@
     <string name="action_settings">Settings</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="key_title">Password (4 numbers betweeen 1 and 9)</string>       
+    <string name="question_title">Secret question</string>  
+    <string name="empty_data">Please, fill all the fields</string> 
+    <string name="invalid_key">Invalid password</string>
     
     <!-- Login strings -->
+    
     <string name="key_error">Invalid password</string>
     <string name="forgot_button">Forgot password</string>
     
     <!-- Register strings -->
-    <string name="register_title">Register form</string> 
-    <string name="key_title">Password (4 numbers betweeen 1 and 9)</string>       
-    <string name="question_title">Secret question</string>      
+    
+    <string name="register_title">Register form</string>     
     <string name="answer_title">Secret answer (to recover your key if lost)</string> 
-    <string name="empty_data">Please, fill all the fields</string> 
-    <string name="invalid_key">Invalid password</string> 
+     
+    <!-- Forgot strings -->
+    
+    <string name="forgot_title">Password recovery</string> 
+    <string name="forgot_key_title">New password (4 numbers betweeen 1 and 9)</string>
+    <string name="forgot_answer_title">Secret answer</string> 
+    <string name="forgot_invalid_answer">Invalid secret answer</string> 
 
 </resources>

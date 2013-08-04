@@ -86,6 +86,20 @@ public class LoginActivity extends Activity
 			buttons_array.get(i-1).setText(String.valueOf(i));
 			buttons_array.get(i-1).setOnClickListener(new DigitOnClickListener(String.valueOf(i)));
 		}
+		
+		// Assign forgot button listener
+		((Button) findViewById(R.id.login_forgot_button)).setOnClickListener(new OnClickListener() 
+		{			
+			@Override
+			public void onClick(View v) 
+			{
+				// Launch forgot activity
+			    Intent intent = new Intent(LoginActivity.this, ForgotActivity.class);
+			    startActivity(intent);	
+			    // Finish login activity
+			    finish();
+			}
+		});
 	}
 	
 
@@ -174,7 +188,6 @@ public class LoginActivity extends Activity
 			if (input_key.length() == KEY_LENGTH)
 			{
 				// Check for key
-				// TODO: change to user key. Now 1234 is accepted
 				if (pManager.checkPassword(input_key))
 				{
 					// TODO: start gallery activity
