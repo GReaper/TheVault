@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+	
+    <!-- General strings -->
+    
     <string name="app_name">TheVault</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    
+    <!-- Login strings -->
+    <string name="key_error">Invalid password</string>
+    
+    <!-- Register strings -->
+    <string name="register_title">Register form</string> 
+    <string name="key_title">Password (4 numbers betweeen 1 and 9)</string>       
+    <string name="question_title">Secret question</string>      
+    <string name="answer_title">Secret answer (to recover your key if lost)</string> 
+    <string name="empty_data">Please, fill all the fields</string> 
+    <string name="invalid_key">Invalid password</string> 
 
 </resources>

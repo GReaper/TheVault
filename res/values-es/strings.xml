@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- General strings -->
+    
+    <string name="app_name">TheVault</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    
+    <!-- Login strings -->
+    <string name="key_error">Contraseña incorrecta</string>
+    
+    <!-- Register strings -->      
+    <string name="register_title">Formulario de registro</string>      
+    <string name="key_title">Contraseña (4 números entre 1 y 9)</string>       
+    <string name="question_title">Pregunta secreta</string>      
+    <string name="answer_title">Respuesta secreta (para recuperar tu clave si la olvidas)</string> 
+    <string name="empty_data">Por favor, rellena todos los campos</string> 
+    <string name="invalid_key">Contraseña no válida</string> 
+
+</resources>

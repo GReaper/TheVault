@@ -3,12 +3,16 @@ package org.v1.thevault;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.classes.PreferencesManager;
+
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 public class LoginActivity extends Activity 
@@ -19,18 +23,37 @@ public class LoginActivity extends Activity
 	// String with the key to be tested
 	private String input_key = "";
 	
+	// Other attrs.
+	PreferencesManager pManager;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.login_activity_layout);
 		
-		// Init view elements
-		initLoginScreen();
+		// Create preferences manager
+		pManager = new PreferencesManager(this);
+		
+		if (pManager.getPassword().equals(""))
+		{
+			// Password not set. Show the register screen
+			initRegisterScreen();					
+		}
+		else
+		{
+			// Password set. Show the login screen
+			initLoginScreen();			
+		}
 	}
 	
+	/**
+	 * This function shows the login screen
+	 */
 	private void initLoginScreen()
 	{
+		// Set content view
+		setContentView(R.layout.login_activity_layout);
+		
 		// Get buttons
 		Button b1 = (Button) findViewById(R.id.pwd_button_1);
 		Button b2 = (Button) findViewById(R.id.pwd_button_2);
@@ -65,6 +88,65 @@ public class LoginActivity extends Activity
 		}
 	}
 	
+
+	/**
+	 * This function shows the register screen
+	 */
+	private void initRegisterScreen()
+	{
+		// Set content view
+		setContentView(R.layout.register_layout);
+		
+		// Get EditText elements
+		final EditText uKey = (EditText) findViewById(R.id.password_text);
+		final EditText uQuestion = (EditText) findViewById(R.id.question_text);
+		final EditText uAnswer = (EditText) findViewById(R.id.answer_text);
+		
+		// Get save button and assign listener
+		Button bSave = (Button) findViewById(R.id.register_save_button);
+		bSave.setOnClickListener(new OnClickListener() 
+		{			
+			@Override
+			public void onClick(View v) 
+			{
+				// Password regex
+				String regex = "^[1-9]{4}$";
+						
+				// Get texts
+				String sKey = uKey.getText().toString();
+				String sQuestion = uQuestion.getText().toString();
+				String sAnswer = uAnswer.getText().toString();
+				
+				// Check fields
+				if ((sKey.length() == 0) || (sQuestion.length() == 0) || (sAnswer.length() == 0))
+				{
+					// Show toast and return
+					Toast.makeText(LoginActivity.this, getResources().getString(R.string.empty_data), Toast.LENGTH_SHORT).show();
+					return;
+				}
+				
+				// Validate key
+				if (!sKey.matches(regex))
+				{
+					// Show toast and return
+					Toast.makeText(LoginActivity.this, getResources().getString(R.string.invalid_key), Toast.LENGTH_SHORT).show();
+					return;
+				}
+				
+				// All filters passed. Store all data
+				pManager.setPassword(sKey);
+				pManager.setSecretQuestion(sQuestion);
+				pManager.setSecretAnswer(sAnswer);
+				
+				// Relaunch activity
+			    Intent intent = new Intent(LoginActivity.this, LoginActivity.class);
+			    startActivity(intent);	
+			    // Finish the current one
+			    finish();
+			}
+		});
+	}
+	
 	/**
 	 * This OnClickListener is used to manage all digits listeners
 	 * 
@@ -93,15 +175,15 @@ public class LoginActivity extends Activity
 			{
 				// Check for key
 				// TODO: change to user key. Now 1234 is accepted
-				if (input_key.equals("1234"))
+				if (pManager.checkPassword(input_key))
 				{
 					// TODO: start gallery activity
 					Toast.makeText(LoginActivity.this, "Ok!", Toast.LENGTH_SHORT).show();
 				}
 				else
 				{
-					// TODO: show hint
-					Toast.makeText(LoginActivity.this, "Hint: ", Toast.LENGTH_SHORT).show();					
+					// Key error toast
+					Toast.makeText(LoginActivity.this, getResources().getString(R.string.key_error), Toast.LENGTH_SHORT).show();					
 				}
 				
 				// Restart key
