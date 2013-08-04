@@ -10,6 +10,7 @@
     
     <!-- Login strings -->
     <string name="key_error">Invalid password</string>
+    <string name="forgot_button">Forgot password</string>
     
     <!-- Register strings -->
     <string name="register_title">Register form</string> 

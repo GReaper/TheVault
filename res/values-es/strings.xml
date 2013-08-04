@@ -10,6 +10,7 @@
     
     <!-- Login strings -->
     <string name="key_error">Contraseña incorrecta</string>
+    <string name="forgot_button">Contraseña olvidada</string>
     
     <!-- Register strings -->      
     <string name="register_title">Formulario de registro</string>      

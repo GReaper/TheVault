@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,6 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".LoginActivity"
+    android:orientation="vertical"
     android:gravity="center" >
 	
 	<!-- Relative Layout to fix buttons at the center -->
@@ -131,5 +132,19 @@
 	    </LinearLayout>
     
     </LinearLayout>
+		
+	<!-- End buttons: forgot  -->
+	     
+   	<Button
+   	    android:id="@+id/login_forgot_button"
+		android:layout_width="wrap_content"
+		android:layout_height="30dip"
+		android:layout_marginLeft="10dip"
+		android:layout_marginRight="20dip"
+		android:layout_marginTop="25dip"
+		android:layout_marginBottom="3dip"
+		android:textSize="16sp"  
+		android:textStyle="bold"
+		android:text="@string/forgot_button" />
 	    
-</RelativeLayout>
+</LinearLayout>
