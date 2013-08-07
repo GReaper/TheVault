@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.classes.PreferencesManager;
+import org.v1.thevault.gallery.FolderVisualizer;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -190,8 +191,13 @@ public class LoginActivity extends Activity
 				// Check for key
 				if (pManager.checkPassword(input_key))
 				{
+					Intent intencion= new Intent(LoginActivity.this,FolderVisualizer.class);
+					
+					startActivity(intencion);
+					finish();
+					
 					// TODO: start gallery activity
-					Toast.makeText(LoginActivity.this, "Ok!", Toast.LENGTH_SHORT).show();
+					//Toast.makeText(LoginActivity.this, "Ok!", Toast.LENGTH_SHORT).show();
 				}
 				else
 				{

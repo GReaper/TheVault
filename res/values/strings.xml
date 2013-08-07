@@ -28,5 +28,7 @@
     <string name="forgot_key_title">New password (4 numbers betweeen 1 and 9)</string>
     <string name="forgot_answer_title">Secret answer</string> 
     <string name="forgot_invalid_answer">Invalid secret answer</string> 
+    <string name="title_activity_file_visualizer">FileVisualizer</string>
+    <string name="hide">Hide</string>
 
 </resources>

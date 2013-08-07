@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layoutSD" >
+
+    <ImageView
+        android:id="@+id/imageSD"
+        android:layout_width="60dip"
+        android:layout_height="60dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/pathSD"
+        android:layout_width="fill_parent"
+        android:layout_height="60dip"
+        android:layout_alignBottom="@+id/imageSD"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/imageSD"
+        android:textSize="25sp"
+        android:textColor="#ffffff"
+        android:gravity="center"/>
+
+</RelativeLayout>
