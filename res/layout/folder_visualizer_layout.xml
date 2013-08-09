@@ -6,7 +6,7 @@
     android:orientation="vertical" >
 
     <ListView
-        android:id="@+id/listaSD"
+        android:id="@+id/listaSD_gallery"
         android:layout_width="match_parent"
         android:layout_height="fill_parent" 
         android:background="#000000">

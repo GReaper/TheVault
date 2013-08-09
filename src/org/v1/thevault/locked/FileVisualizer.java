@@ -1,4 +1,4 @@
-package org.v1.thevault.gallery;
+package org.v1.thevault.locked;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -65,12 +65,14 @@ public class FileVisualizer extends Activity
     
     private int mImageThumbSpacing;
     private int mImageThumbSize;
+    
+    public static String extensionCodificado="lck";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_file_visualizer_gallery);
+		setContentView(R.layout.activity_file_visualizer_lock);
 		
 		Bundle extras = getIntent().getExtras();
 		ficheroRaiz= new File(extras.getString("raiz"));
@@ -112,7 +114,7 @@ public class FileVisualizer extends Activity
 		
 		
 		
-		 grid=(GridView) findViewById(R.id.grid_file_visualizer_gallery);
+		 grid=(GridView) findViewById(R.id.grid_file_visualizer_lock);
 			
 		 adapter=new ImageAdapter(getApplicationContext());					
 					
@@ -143,8 +145,8 @@ public class FileVisualizer extends Activity
 	
 	 public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	 {
-		 final View v = inflater.inflate(R.layout.activity_file_visualizer_gallery, container, false);
-		 grid=(GridView) findViewById(R.id.grid_file_visualizer_gallery);
+		 final View v = inflater.inflate(R.layout.activity_file_visualizer_lock, container, false);
+		 grid=(GridView) findViewById(R.id.grid_file_visualizer_lock);
 			
 		 adapter=new ImageAdapter(getApplicationContext());					
 					
@@ -183,10 +185,13 @@ public class FileVisualizer extends Activity
 	    	synchronized (mDiskCacheLock) 
 	    	{
 	            File cacheDir = params[0];
-	            try {
+	            try 
+	            {
 					mDiskLruCache = DiskLruCache.open(cacheDir, 1, 1,DISK_CACHE_SIZE);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+				} 
+	            catch (IOException e) 
+				{
+					
 					e.printStackTrace();
 				}
 	            mDiskCacheStarting = false; // Finished initialization
@@ -217,11 +222,9 @@ public class FileVisualizer extends Activity
 		
 		for(File f: imagenes)
 		{
-			if(FolderVisualizer.isValido(f.getName()))
-			{
-				
-				devolver.add(f);
-			}
+			if(f.getName().contains(extensionCodificado));
+			devolver.add(f);
+			
 		}		   		
 		
 		
@@ -305,6 +308,9 @@ public class FileVisualizer extends Activity
 		    final BitmapFactory.Options options = new BitmapFactory.Options();
 		    options.inJustDecodeBounds = true;
 		    //BitmapFactory.decodeResource(res, resId, options);
+		    
+		    //TODO, aqui es donde se deberan descomprimir las fotos
+		    
 		    BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
 		    
 		    // Calculate inSampleSize
@@ -539,6 +545,64 @@ public class FileVisualizer extends Activity
 		return null;
 	}
 
+	
+    /**
+     * Get a usable cache directory (external if available, internal otherwise).
+     *
+     * @param context The context to use
+     * @param uniqueName A unique directory name to append to the cache dir
+     * @return The cache dir
+     */
+    public static File getDiskCacheDir(Context context, String uniqueName) 
+    {
+        // Check if media is mounted or storage is built-in, if so, try and use external cache dir
+        // otherwise use internal cache dir
+        final String cachePath =
+                Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ||
+                        !isExternalStorageRemovable() ? getExternalCacheDir(context).getPath() :
+                                context.getCacheDir().getPath();
+
+        return new File(cachePath + File.separator + uniqueName);
+    }
+
+    /**
+     * Check if external storage is built-in or removable.
+     *
+     * @return True if external storage is removable (like an SD card), false
+     *         otherwise.
+     */
+    @TargetApi(9)
+    public static boolean isExternalStorageRemovable() 
+    {
+        if (Utils.hasGingerbread()) 
+        {
+            return Environment.isExternalStorageRemovable();
+        }
+        return true;
+    }
+
+    /**
+     * Get the external app cache directory.
+     *
+     * @param context The context to use
+     * @return The external cache dir
+     */
+    @TargetApi(8)
+    public static File getExternalCacheDir(Context context) 
+    {
+        if (Utils.hasFroyo()) 
+        {
+            return context.getExternalCacheDir();
+        }
+
+        // Before Froyo we need to construct the external cache dir ourselves
+        final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
+        return new File(Environment.getExternalStorageDirectory().getPath() + cacheDir);
+    }
+
+
+    //XXX adapter
+
 	private class ImageAdapter extends BaseAdapter
 	{
 		private final Context mContext;
@@ -618,66 +682,6 @@ public class FileVisualizer extends Activity
         }
 		 
 	}
-
-
-	
-	
-    /**
-     * Get a usable cache directory (external if available, internal otherwise).
-     *
-     * @param context The context to use
-     * @param uniqueName A unique directory name to append to the cache dir
-     * @return The cache dir
-     */
-    public static File getDiskCacheDir(Context context, String uniqueName) 
-    {
-        // Check if media is mounted or storage is built-in, if so, try and use external cache dir
-        // otherwise use internal cache dir
-        final String cachePath =
-                Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) ||
-                        !isExternalStorageRemovable() ? getExternalCacheDir(context).getPath() :
-                                context.getCacheDir().getPath();
-
-        return new File(cachePath + File.separator + uniqueName);
-    }
-
-    /**
-     * Check if external storage is built-in or removable.
-     *
-     * @return True if external storage is removable (like an SD card), false
-     *         otherwise.
-     */
-    @TargetApi(9)
-    public static boolean isExternalStorageRemovable() 
-    {
-        if (Utils.hasGingerbread()) 
-        {
-            return Environment.isExternalStorageRemovable();
-        }
-        return true;
-    }
-
-    /**
-     * Get the external app cache directory.
-     *
-     * @param context The context to use
-     * @return The external cache dir
-     */
-    @TargetApi(8)
-    public static File getExternalCacheDir(Context context) 
-    {
-        if (Utils.hasFroyo()) 
-        {
-            return context.getExternalCacheDir();
-        }
-
-        // Before Froyo we need to construct the external cache dir ourselves
-        final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
-        return new File(Environment.getExternalStorageDirectory().getPath() + cacheDir);
-    }
-
-
-
 
 
 

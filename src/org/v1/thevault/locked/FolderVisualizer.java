@@ -1,4 +1,4 @@
-package org.v1.thevault.gallery;
+package org.v1.thevault.locked;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.v1.thevault.R;
+import org.v1.thevault.gallery.FileVisualizer;
 
 
 import android.app.Activity;
@@ -33,138 +34,77 @@ public class FolderVisualizer extends Activity
 	ListView listaElementos;
 	AdapterSD adapterSD;
 	File raizSD;
-	File ficheroEnPantalla;
-	
-	public static String[] extensionesValidas;
-	
-	List<Folder> ficherosRaiz;
-	
-	
+	List<File> ficherosRaiz;
+	View vistaVacia;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.folder_visualizer_layout);
+		setContentView(R.layout.folder_lock_visualizer_layout);
 		
-		listaElementos=(ListView) this.findViewById(R.id.listaSD_gallery);
+		listaElementos=(ListView) this.findViewById(R.id.listaSD_lock);
 		
 				
-		raizSD=new File(Environment.getExternalStorageDirectory().getAbsolutePath());
-			
-		extensionesValidas= getExtensionesFotos();
+		raizSD=new File(Environment.getExternalStorageDirectory().getAbsolutePath(),".thevault");		
+		if(!raizSD.exists())
+		{
+			raizSD.mkdirs();
+		}
 		
 		
-		ficherosRaiz= construyeArbol(raizSD, new ArrayList<Folder>());		
-		Collections.sort(ficherosRaiz);
+		ficherosRaiz= construyeArbol(raizSD);		
+		
 			
 		adapterSD= new AdapterSD(getApplicationContext());
 		listaElementos.setAdapter(adapterSD);	
 		
+		vistaVacia=this.findViewById(R.id.emptyView);
+		
+		listaElementos.setEmptyView(vistaVacia);
+		
+		listaElementos.setOnLongClickListener(getListener());
+		vistaVacia.setOnLongClickListener(getListener());
 		
 	}
-	
-	private String[] getExtensionesFotos()
+		
+	public List<File> construyeArbol(File ficheroAMirar)
 	{
+		List<File> devolver= new ArrayList<File>();
 		
-		String[] devolver= new String[3];
+		File[] hijos= ficheroAMirar.listFiles();
 		
-		devolver[0]=".jpg";
-		devolver[1]=".jpeg";
-		devolver[2]=".png";
+		for(File f: hijos)
+		{
+			devolver.add(f);
+		}		
 		
 		return devolver;
-		
 	}
 	
-		
-	public List<Folder> construyeArbol(File ficheroAMirar,List<Folder> listaActual)
+	public void crearCarpeta()
 	{
-		if(ficheroAMirar.isFile())
+		File faux= new File(raizSD, "prueba");
+		if(!faux.exists())
 		{
-			return listaActual;
-		}
-		else
-		{
-			List<Folder> aDevolver= new ArrayList<Folder>(listaActual);
-			
-			if(ficheroAMirar.isDirectory())
-			{
-				
-				if(ficheroAMirar.list().length>0)//comprobamos si esta vacio
-				{
-					File[] hijosArray= ficheroAMirar.listFiles();					
-					
-					List<File> hijos= new ArrayList<File>();
-					for(File f: hijosArray)
-					{
-						hijos.add(f);
-					}
-					
-					Comparator<File> comparator= new Comparator<File>() 
-					{
-						
-						@Override
-						public int compare(File lhs, File rhs) 
-						{
-							return lhs.getName().compareTo(rhs.getName());
-						}
-					};
-					
-					Collections.sort(hijos,comparator);
-							
-					//construimos la lista para cada hijo
-					boolean hayHijos=false;
-					File ultimoHijo=null;
-					for(File hijoConcreto: hijos)
-					{
-						if(!hijoConcreto.getName().toLowerCase().startsWith("."))//no analizamos ocultos
-						{
-							aDevolver= construyeArbol(hijoConcreto, aDevolver);
-							
-							if(isValido(hijoConcreto.getName()))
-							{
-								hayHijos=true;
-								ultimoHijo=hijoConcreto;
-							}
-						}
-						
-						//si hay un archivo que dice que no se analice, se devuelve lo que teniamos
-						if(hijoConcreto.getName().toLowerCase().equals(".nomedia"))
-						{
-							return listaActual;
-						}
-						
-					}			
-					
-					if(hayHijos)
-					{
-						Folder folder= new Folder(ficheroAMirar);
-						folder.setImagen(ultimoHijo);
-						aDevolver.add(folder);
-					}
-				}
-				
-				
-			}		
-			
-			return aDevolver;
+			faux.mkdirs();
 		}
 	}
 	
-	public static boolean isValido(String name) 
+	public OnLongClickListener getListener()
 	{
-		
-		for(String s: extensionesValidas)
+		return new OnLongClickListener()
 		{
-			if(name.toLowerCase().endsWith(s))
+			
+			@Override
+			public boolean onLongClick(View v) 
 			{
+				crearCarpeta();
+				ficherosRaiz= construyeArbol(raizSD);	
+				adapterSD.notifyDataSetChanged();
 				return true;
 			}
-		}
-		
-		
-		return false;
+		};
 	}
 	
 	//XXX adapter
@@ -193,7 +133,7 @@ public class FolderVisualizer extends Activity
 		}
 
 		@Override
-		public Folder getItem(int pos) 
+		public File getItem(int pos) 
 		{
 			return ficherosRaiz.get(pos);
 		}
@@ -233,13 +173,13 @@ public class FolderVisualizer extends Activity
 			holder.layout=(RelativeLayout) view.findViewById(R.id.layoutSD);
 			view.setTag(holder);
 			
-			final Folder ficheroActual= getItem(position);
+			final File ficheroActual= getItem(position);
 
-			Bitmap imagen= BitmapFactory.decodeFile(ficheroActual.getImagen().getAbsolutePath());
-			holder.imageFichero.setImageBitmap(imagen);
+			
+			holder.imageFichero.setImageDrawable(getResources().getDrawable(R.drawable.carpeta));
 			
 									
-			holder.textoFichero.setText(ficheroActual.getCarpeta().getName());
+			holder.textoFichero.setText(ficheroActual.getName());
 			
 			holder.layout.setOnClickListener(new OnClickListener()
 			{
@@ -248,7 +188,7 @@ public class FolderVisualizer extends Activity
 				public void onClick(View v) 
 				{
 					Intent intent = new Intent(FolderVisualizer.this, FileVisualizer.class);
-					intent.putExtra("raiz", ficheroActual.getCarpeta().getAbsolutePath());
+					intent.putExtra("raiz", ficheroActual.getAbsolutePath());
 					startActivity(intent);
 					
 				}

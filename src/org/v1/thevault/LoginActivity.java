@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.classes.PreferencesManager;
-import org.v1.thevault.gallery.FolderVisualizer;
+import org.v1.thevault.locked.FolderVisualizer;
+
 
 import android.os.Bundle;
 import android.app.Activity;

@@ -48,6 +48,12 @@
             android:label="@string/title_activity_file_visualizer" >
         </activity>
         
+                <activity
+            android:name="org.v1.thevault.locked.FolderVisualizer"
+            android:label="@string/app_name" >
+            
+        </activity>
+        
     </application>
 
 </manifest>
