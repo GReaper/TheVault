@@ -19,5 +19,6 @@
 
     <color name="grid_state_pressed">#BB7dbcd3</color>
     <color name="grid_state_focused">#777dbcd3</color>
-
+    <color name="selection">#330000aa</color>
+  
 </resources>

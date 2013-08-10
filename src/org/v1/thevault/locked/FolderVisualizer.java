@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.v1.thevault.R;
-import org.v1.thevault.gallery.FileVisualizer;
 
 
 import android.app.Activity;

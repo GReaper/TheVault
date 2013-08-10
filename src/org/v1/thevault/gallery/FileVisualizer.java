@@ -23,12 +23,16 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -37,6 +41,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -44,7 +49,7 @@ public class FileVisualizer extends Activity
 {
 	
 	private File ficheroRaiz;
-	private List<File> listaImagenes;
+	private List<MyFile> listaImagenes;
 	
 	//private ImageView imageView;
 	private GridView grid;
@@ -183,10 +188,11 @@ public class FileVisualizer extends Activity
 	    	synchronized (mDiskCacheLock) 
 	    	{
 	            File cacheDir = params[0];
-	            try {
+	            try 
+	            {
 					mDiskLruCache = DiskLruCache.open(cacheDir, 1, 1,DISK_CACHE_SIZE);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
+				} catch (IOException e) 
+				{
 					e.printStackTrace();
 				}
 	            mDiskCacheStarting = false; // Finished initialization
@@ -209,9 +215,9 @@ public class FileVisualizer extends Activity
 	{
 	    return mMemoryCache.get(key);
 	}
-	private List<File> getImagenes()
+	private List<MyFile> getImagenes()
 	{
-		List<File> devolver= new ArrayList<File>();
+		List<MyFile> devolver= new ArrayList<MyFile>();
 		
 		File[] imagenes=ficheroRaiz.listFiles();
 		
@@ -219,19 +225,20 @@ public class FileVisualizer extends Activity
 		{
 			if(FolderVisualizer.isValido(f.getName()))
 			{
+				MyFile faux= new MyFile(f);
 				
-				devolver.add(f);
+				devolver.add(faux);
 			}
 		}		   		
 		
 		
-		Comparator<File> comparator= new Comparator<File>() 
+		Comparator<MyFile> comparator= new Comparator<MyFile>() 
 		{
 			
 			@Override
-			public int compare(File lhs, File rhs) 
+			public int compare(MyFile lhs, MyFile rhs) 
 			{
-				return rhs.getAbsolutePath().compareTo(lhs.getAbsolutePath());
+				return rhs.getFile().getAbsolutePath().compareTo(lhs.getFile().getAbsolutePath());
 			}
 		};
 		
@@ -539,88 +546,6 @@ public class FileVisualizer extends Activity
 		return null;
 	}
 
-	private class ImageAdapter extends BaseAdapter
-	{
-		private final Context mContext;
-		private int mItemHeight = 0;
-        private int mNumColumns = 0;
-        private GridView.LayoutParams mImageViewLayoutParams;
-		 
-		public ImageAdapter(Context c)
-		{
-			super();
-			this.mContext=c;
-			mImageViewLayoutParams = new GridView.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-		}
-		 
-		@Override
-		public int getCount() 
-		{
-			return listaImagenes.size();
-		}
-
-		@Override
-		public File getItem(int position) 
-		{
-			return listaImagenes.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) 
-		{
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) 
-		{
-			ImageView imageView;
-            if (convertView == null)
-            { // if it's not recycled, initialize some attributes
-                imageView = new ImageView(mContext);                            
-                imageView.setLayoutParams(mImageViewLayoutParams);
-                imageView.setScaleType(ScaleType.FIT_XY);
-            } else 
-            {
-                imageView = (ImageView) convertView;
-            }
-            
-            if (imageView.getLayoutParams().height != mItemHeight) 
-            {
-                imageView.setLayoutParams(mImageViewLayoutParams);
-                imageView.setScaleType(ScaleType.FIT_XY);
-            }
-
-            loadBitmap(getItem(position), imageView);
-            return imageView;
-		}
-		
-        public void setNumColumns(int numColumns) 
-        {
-            mNumColumns = numColumns;
-        }
-
-        public int getNumColumns() 
-        {
-            return mNumColumns;
-        }
-        
-        public void setItemHeight(int height) 
-        {
-            if (height == mItemHeight) 
-            {
-                return;
-            }
-            mItemHeight = height;
-            mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, mItemHeight);            
-            notifyDataSetChanged();
-        }
-		 
-	}
-
-
-	
 	
     /**
      * Get a usable cache directory (external if available, internal otherwise).
@@ -676,10 +601,162 @@ public class FileVisualizer extends Activity
         return new File(Environment.getExternalStorageDirectory().getPath() + cacheDir);
     }
 
+    //XXX adapter
+    private class ImageAdapter extends BaseAdapter
+	{
+		private final Context mContext;
+		private int mItemHeight = 0;
+        private int mNumColumns = 0;
+        private LayoutParams mImageViewLayoutParams;
+        private LayoutInflater inflator;
+        
+        public class ViewHolder
+		{ 
+		    protected ImageView imagenPpal;
+		    protected ImageView imagenSecundaria;
+		    
+		}
+		 
+		public ImageAdapter(Context c)
+		{
+			super();
+			this.mContext=c;
+			this.inflator = LayoutInflater.from(this.mContext);
+			mImageViewLayoutParams = new GridView.LayoutParams(
+                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		}
+		 
+		@Override
+		public int getCount() 
+		{
+			return listaImagenes.size();
+		}
 
+		@Override
+		public MyFile getItem(int position) 
+		{
+			return listaImagenes.get(position);
+		}
 
+		@Override
+		public long getItemId(int position) 
+		{
+			return position;
+		}
 
+		@Override
+		public View getView(final int position, View convertView, ViewGroup parent) 
+		{
+			View view = null;
+			final ViewHolder viewHolder;
+			
+			
+			if(convertView==null)
+			{
+				view=inflator.inflate(R.layout.image_gallery, null);
+				viewHolder = new ViewHolder();
+								
+				viewHolder.imagenPpal=(ImageView)view.findViewById(R.id.imageGalleryBackground);
+				viewHolder.imagenSecundaria=(ImageView)view.findViewById(R.id.imageGalleryHover);
+				
+				//viewHolder.imagenPpal.setLayoutParams(mImageViewLayoutParams);
 
+				int width=mImageViewLayoutParams.width;
+				int height=mImageViewLayoutParams.height;
+				
+				viewHolder.imagenPpal.setScaleType(ScaleType.FIT_XY);
+				viewHolder.imagenPpal.getLayoutParams().width=width;
+				viewHolder.imagenPpal.getLayoutParams().height=height;
+				
+				//viewHolder.imagenSecundaria.setLayoutParams(mImageViewLayoutParams);
+				viewHolder.imagenSecundaria.getLayoutParams().width=width;
+				viewHolder.imagenSecundaria.getLayoutParams().height=height;
+				viewHolder.imagenSecundaria.setScaleType(ScaleType.FIT_XY);
+				
+				view.setTag(viewHolder);
+			}			
+			else
+			{
+				view=convertView;
+				viewHolder=(ViewHolder) convertView.getTag();
+			}
+			
+			if(viewHolder.imagenPpal.getLayoutParams().height != mItemHeight && mItemHeight!=0)
+			{
+				int width=mImageViewLayoutParams.width;
+				int height=mImageViewLayoutParams.height;
+				
+				viewHolder.imagenPpal.getLayoutParams().width=width;
+				viewHolder.imagenPpal.getLayoutParams().height=height;
+				//viewHolder.imagenPpal.setLayoutParams(mImageViewLayoutParams);
+				viewHolder.imagenPpal.setScaleType(ScaleType.FIT_XY);
+				
+				//viewHolder.imagenSecundaria.setLayoutParams(mImageViewLayoutParams);
+				viewHolder.imagenSecundaria.getLayoutParams().width=width;
+				viewHolder.imagenSecundaria.getLayoutParams().height=height;
+				viewHolder.imagenSecundaria.setScaleType(ScaleType.FIT_XY);
+			}
+			//viewHolder.imagenPpal.setBackground(getResources().getDrawable(R.drawable.ic_launcher));
+			
+			final MyFile myfile=getItem(position);
 
+            loadBitmap(myfile.getFile(), viewHolder.imagenPpal);
+            
+            if(myfile.isSeleccionado())
+            {
+            	
+            	viewHolder.imagenSecundaria.setBackgroundColor(getResources().getColor(R.color.selection));
+            }
+            else
+            {
+            	viewHolder.imagenSecundaria.setBackgroundColor(Color.TRANSPARENT);	
+            }            
+            
+            viewHolder.imagenSecundaria.setOnClickListener(new OnClickListener() 
+            {
+				
+				@Override
+				public void onClick(View v) 
+				{
+					myfile.cambiarSeleccion();
+										
+					if(myfile.isSeleccionado())
+		            {
+						viewHolder.imagenSecundaria.setBackgroundColor(getResources().getColor(R.color.selection));		            	
+		            }
+		            else
+		            {
+		            	viewHolder.imagenSecundaria.setBackgroundColor(Color.TRANSPARENT);	
+		            }
+					
+				}
+			});
+
+            return view;
+           
+		}
+		
+        public void setNumColumns(int numColumns) 
+        {
+            mNumColumns = numColumns;
+        }
+
+        public int getNumColumns() 
+        {
+            return mNumColumns;
+        }
+        
+        public void setItemHeight(int height) 
+        {
+            if (height == mItemHeight) 
+            {
+                return;
+            }
+            mItemHeight = height;
+            mImageViewLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, mItemHeight);            
+            notifyDataSetChanged();
+        }
+		 
+	}
 
 }

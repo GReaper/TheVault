@@ -28,7 +28,7 @@
     <string name="forgot_key_title">Contraseña nueva (4 números entre 1 y 9)</string>
     <string name="forgot_answer_title">Respuesta secreta</string> 
     <string name="forgot_invalid_answer">Respuesta secreta incorrecta</string> 
-    <string name="hide">Ocultar</string>
-    <string name="unhide">Mostrar</string>
+    <string name="hide">Ocultar fotos</string>
+    <string name="unhide">Mostrar fotos</string>
 
 </resources>

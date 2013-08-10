@@ -29,7 +29,7 @@
     <string name="forgot_answer_title">Secret answer</string> 
     <string name="forgot_invalid_answer">Invalid secret answer</string> 
     <string name="title_activity_file_visualizer">FileVisualizer</string>
-    <string name="hide">Hide</string>
-    <string name="unhide">Unhide</string>
+    <string name="hide">Hide photos</string>
+    <string name="unhide">Unhide photos</string>
 
 </resources>
