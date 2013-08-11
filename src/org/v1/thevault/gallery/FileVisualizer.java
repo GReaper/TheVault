@@ -36,6 +36,7 @@ import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -70,6 +71,9 @@ public class FileVisualizer extends Activity
     
     private int mImageThumbSpacing;
     private int mImageThumbSize;
+    
+    private File destino;
+    private Button botonOcultar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -79,6 +83,7 @@ public class FileVisualizer extends Activity
 		
 		Bundle extras = getIntent().getExtras();
 		ficheroRaiz= new File(extras.getString("raiz"));
+		destino= new File(extras.getString("destino"));
 		listaImagenes= getImagenes();
 		
 		 mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
@@ -144,6 +149,19 @@ public class FileVisualizer extends Activity
 	                    }
 	                });
 		 	
+		 botonOcultar= (Button) findViewById(R.id.botonOcultarGallery);
+		 botonOcultar.setOnClickListener(new OnClickListener() 
+		 {
+			
+			@Override
+			public void onClick(View v) 
+			{
+				MoveFiles mf= new MoveFiles();
+				mf.execute();
+				
+			}
+		});
+		 
 	}
 	
 	 public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -759,4 +777,63 @@ public class FileVisualizer extends Activity
 		 
 	}
 
+    class MoveFiles extends AsyncTask<Void, Void, Void>
+    {
+    	ProgressDialog progressBar;
+    	List<File> ficherosAMover;
+    	
+    	@Override
+    	protected void onPreExecute()
+    	{
+    		ficherosAMover= new ArrayList<File>();
+    		
+    		for(MyFile mf:listaImagenes)
+    		{
+    			if(mf.isSeleccionado())
+    				ficherosAMover.add(mf.getFile());
+    		}
+    		
+    		progressBar = new ProgressDialog(FileVisualizer.this);
+			progressBar.setCancelable(true);
+			progressBar.setMessage(getResources().getString(R.string.file_moving));
+			progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progressBar.setProgress(0);
+			progressBar.setMax(ficherosAMover.size());
+			if(ficherosAMover.size()!=0)
+				progressBar.show();
+    	}
+    	
+		@Override
+		protected Void doInBackground(Void... params) 
+		{
+			int progreso=1;
+			for(File f: ficherosAMover)
+			{
+					moverFichero(f);
+					progressBar.setProgress(progreso);
+					progreso++;
+				
+			}
+			
+			return null;
+		}
+    	
+		@Override
+		protected void onPostExecute(Void v)
+		{
+			progressBar.dismiss();
+		}
+		
+		public void moverFichero(File fichero)
+		{
+			//TODO aqui mover el fichero al destino
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    }
+    
 }
