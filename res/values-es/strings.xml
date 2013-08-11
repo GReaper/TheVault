@@ -37,6 +37,7 @@
     <string name="editFolder">Editar el nombre carpeta</string>
     <string name="deleteFolder">Borrar carpeta</string>
      <string name="cantdelete">Carpeta con elementos, no se puede borrar</string>
+      <string name="file_moving">moviendo ficheros...</string>
    
 
 </resources>

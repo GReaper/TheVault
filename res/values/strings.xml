@@ -37,7 +37,8 @@
     <string name="ok">Ok</string>
     <string name="editFolder">Edit name folder</string>
     <string name="deleteFolder">Delete folder</string>
-     <string name="cantdelete">Folder with files, can\'t delete</string>
+    <string name="cantdelete">Folder with files, can\'t delete</string>
+     <string name="file_moving">file Moving...</string>
    
     
 

@@ -22,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.util.LruCache;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -157,7 +157,8 @@ public class FileVisualizer extends Activity
 			@Override
 			public void onClick(View v) 
 			{
-								
+					MoveFiles mf= new MoveFiles();
+					mf.execute();
 			}
 		});
 		 
@@ -169,6 +170,7 @@ public class FileVisualizer extends Activity
 			public void onClick(View v) 
 			{
 				Intent intent= new Intent(FileVisualizer.this, FolderVisualizer.class);
+				intent.putExtra("destino", ficheroRaiz.getAbsolutePath());
 				startActivity(intent);
 				
 			}
@@ -798,4 +800,62 @@ public class FileVisualizer extends Activity
    	}
 
 
+    class MoveFiles extends AsyncTask<Void, Void, Void>
+    {
+    	ProgressDialog progressBar;
+    	List<File> ficherosAMover;
+    	
+    	@Override
+    	protected void onPreExecute()
+    	{
+    		ficherosAMover= new ArrayList<File>();
+    		
+    		for(MyFile mf:listaImagenes)
+    		{
+    			if(mf.isSeleccionado())
+    				ficherosAMover.add(mf.getFile());
+    		}
+    		
+    		progressBar = new ProgressDialog(FileVisualizer.this);
+			progressBar.setCancelable(true);
+			progressBar.setMessage(getResources().getString(R.string.file_moving));
+			progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progressBar.setProgress(0);
+			progressBar.setMax(ficherosAMover.size());
+			if(ficherosAMover.size()!=0)
+				progressBar.show();
+    	}
+    	
+		@Override
+		protected Void doInBackground(Void... params) 
+		{
+			int progreso=1;
+			for(File f: ficherosAMover)
+			{
+					moverFichero(f);
+					progressBar.setProgress(progreso);
+					progreso++;
+				
+			}
+			
+			return null;
+		}
+    	
+		@Override
+		protected void onPostExecute(Void v)
+		{
+			progressBar.dismiss();
+		}
+		
+		public void moverFichero(File fichero)
+		{
+			//TODO aqui mover el fichero al destino original
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+    }
 }

@@ -39,6 +39,8 @@ public class FolderVisualizer extends Activity
 	
 	List<Folder> ficherosRaiz;
 	
+	File destino;
+	
 	
 
 	@Override
@@ -60,6 +62,9 @@ public class FolderVisualizer extends Activity
 			
 		adapterSD= new AdapterSD(getApplicationContext());
 		listaElementos.setAdapter(adapterSD);	
+		
+		Bundle extras = getIntent().getExtras();
+		destino=new File(extras.getString("destino"));
 		
 		
 	}
@@ -242,6 +247,7 @@ public class FolderVisualizer extends Activity
 				{
 					Intent intent = new Intent(FolderVisualizer.this, FileVisualizer.class);
 					intent.putExtra("raiz", ficheroActual.getCarpeta().getAbsolutePath());
+					intent.putExtra("destino", destino.getAbsolutePath());
 					startActivity(intent);
 					
 				}

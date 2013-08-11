@@ -8,7 +8,7 @@
             style="@style/PhotoGridLayout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_above="@+id/button1"
+            android:layout_above="@+id/botonOcultarGallery"
             android:columnWidth="@dimen/image_thumbnail_size"
             android:horizontalSpacing="@dimen/image_thumbnail_spacing"
             android:numColumns="auto_fit"
@@ -19,7 +19,7 @@
         </GridView>
         
          <Button
-        android:id="@+id/button1"
+        android:id="@+id/botonOcultarGallery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
