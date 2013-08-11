@@ -28,7 +28,15 @@
     <string name="forgot_key_title">Contraseña nueva (4 números entre 1 y 9)</string>
     <string name="forgot_answer_title">Respuesta secreta</string> 
     <string name="forgot_invalid_answer">Respuesta secreta incorrecta</string> 
+    <!-- Vity values -->
     <string name="hide">Ocultar fotos</string>
     <string name="unhide">Mostrar fotos</string>
+    <string name="newFolder">Crear una nueva carpeta</string>
+    <string name="newName">Por favor, indicar el nombre</string>
+    <string name="ok">Ok</string>
+    <string name="editFolder">Editar el nombre carpeta</string>
+    <string name="deleteFolder">Borrar carpeta</string>
+     <string name="cantdelete">Carpeta con elementos, no se puede borrar</string>
+   
 
 </resources>

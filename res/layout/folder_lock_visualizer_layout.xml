@@ -3,12 +3,15 @@
     android:layout_height="fill_parent"
     android:layout_alignParentLeft="true"
     android:layout_alignParentTop="true"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:id="@+id/layout_lock_visualizer"
+    android:background="#000000"
+    >
 
     <ListView
         android:id="@+id/listaSD_lock"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent" 
+        android:layout_height="wrap_content" 
         android:background="#000000">
     </ListView>
     

@@ -28,8 +28,17 @@
     <string name="forgot_key_title">New password (4 numbers betweeen 1 and 9)</string>
     <string name="forgot_answer_title">Secret answer</string> 
     <string name="forgot_invalid_answer">Invalid secret answer</string> 
+    <!-- Vity values -->
     <string name="title_activity_file_visualizer">FileVisualizer</string>
     <string name="hide">Hide photos</string>
     <string name="unhide">Unhide photos</string>
+    <string name="newFolder">Create a new folder</string>
+    <string name="newName">Please, specify the name</string>
+    <string name="ok">Ok</string>
+    <string name="editFolder">Edit name folder</string>
+    <string name="deleteFolder">Delete folder</string>
+     <string name="cantdelete">Folder with files, can\'t delete</string>
+   
+    
 
 </resources>

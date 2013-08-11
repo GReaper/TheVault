@@ -209,7 +209,7 @@ public class FolderVisualizer extends Activity
 		{
 			View view = null;
 			ViewHolder holder;
-			/*
+			
 			if(convertView==null)
 			{
 				LayoutInflater inflator= LayoutInflater.from(contexto);
@@ -224,14 +224,7 @@ public class FolderVisualizer extends Activity
 			{
 				holder = (ViewHolder) convertView.getTag();
 			}
-			*/
-			LayoutInflater inflator= LayoutInflater.from(contexto);
-			view=inflator.inflate(R.layout.item_sd, null);
-			holder= new ViewHolder();
-			holder.imageFichero=(ImageView) view.findViewById(R.id.imageSD);
-			holder.textoFichero= (TextView) view.findViewById(R.id.pathSD);
-			holder.layout=(RelativeLayout) view.findViewById(R.id.layoutSD);
-			view.setTag(holder);
+			
 			
 			final Folder ficheroActual= getItem(position);
 
