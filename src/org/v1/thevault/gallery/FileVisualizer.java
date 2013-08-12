@@ -1,16 +1,24 @@
 package org.v1.thevault.gallery;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 
 import org.v1.thevault.R;
 
@@ -809,7 +817,15 @@ public class FileVisualizer extends Activity
 			int progreso=1;
 			for(File f: ficherosAMover)
 			{
-					moverFichero(f);
+					try 
+					{
+						moverFichero(f);
+					} 
+					catch (Exception e) 
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					progressBar.setProgress(progreso);
 					progreso++;
 				
@@ -824,15 +840,58 @@ public class FileVisualizer extends Activity
 			progressBar.dismiss();
 		}
 		
-		public void moverFichero(File fichero)
+		public void moverFichero(File fichero)throws Exception
 		{
-			//TODO aqui mover el fichero al destino
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String nombreArchivo=fichero.getName()+".lck";
+			File destinoAuxiliar= new File(destino, nombreArchivo);		
+			
+			InputStream inStream = null;
+		    OutputStream outStream = null;
+		    
+		    inStream = new FileInputStream(fichero);
+            outStream = new FileOutputStream(destinoAuxiliar);
+            int tamBuffer=1024;
+		    
+		    byte[] buffer = new byte[tamBuffer];
+		    List<Byte> listaBytes= new ArrayList<Byte>();
+		    byte[] byteOrigen= fichero.getAbsolutePath().getBytes();
+		    int total=byteOrigen.length;
+		    for(byte b: byteOrigen)
+		    {
+		    	listaBytes.add(b);
+		    }
+		    for(int i=total;i<tamBuffer;i++)
+		    {
+		    	String aux="*";
+		    	listaBytes.add(aux.getBytes()[0]);
+		    }
+		    	
+		    byte[] auxiliar= new byte[tamBuffer];
+		    for(int i=0;i<tamBuffer;i++)
+		    {
+		    	auxiliar[i]=listaBytes.get(i);
+		    }
+		    
+		    String str = new String(auxiliar, "UTF-8");
+           
+            while ((inStream.read(buffer)) > 0)
+            {
+                for(byte b: buffer)
+                {
+                	listaBytes.add(b);
+                }
+            }
+            byte[] bytesCodificados=new byte[listaBytes.size()];
+            for(int i=0;i<listaBytes.size();i++)
+            {
+            	bytesCodificados[i]=listaBytes.get(i);
+            }
+            outStream.write(bytesCodificados, 0, bytesCodificados.length);
+            //outStream.write(buffer, 0, length);
+ 
+            if (inStream != null)inStream.close();
+            if (outStream != null)outStream.close();
+ 
 		}
     }
     
