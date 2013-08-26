@@ -55,7 +55,7 @@ public class FileVisualizer extends Activity
 	//private ImageView imageView;
 	private GridView grid;
 	
-	private Bitmap bitmapDefecto;
+	private static Bitmap bitmapDefecto;
 	private ImageAdapter adapter;
 	
 	private LruCache<String, Bitmap> mMemoryCache;
@@ -344,6 +344,8 @@ public class FileVisualizer extends Activity
 		        int reqWidth, int reqHeight) 
 	{
 
+		try
+		{
 		    // First decode with inJustDecodeBounds=true to check dimensions
 		    final BitmapFactory.Options options = new BitmapFactory.Options();
 		    options.inJustDecodeBounds = true;
@@ -351,14 +353,52 @@ public class FileVisualizer extends Activity
 		    
 		    //TODO, aqui es donde se deberan descomprimir las fotos
 		    
-		    BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
+		    
+		    //BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
+		   
+		    
+		    InputStream is= new FileInputStream(fichero);
+		    byte[] buffer = new byte[org.v1.thevault.gallery.FileVisualizer.tamBuffer];
+		    List<Byte> listaBytes= new ArrayList<Byte>();		    
+		    is.read(buffer);
+		  //  String str = new String(buffer, "UTF-8");
+		    
+		    while ((is.read(buffer)) > 0)
+            {
+                for(byte b: buffer)
+                {
+                	listaBytes.add(b);
+                }
+            }
+		    
+		    is.close();
+		    
+		    byte[] bytesCodificados=new byte[listaBytes.size()];
+            for(int i=0;i<listaBytes.size();i++)
+            {
+            	bytesCodificados[i]=listaBytes.get(i);
+            }
+		    
+		    
+		    BitmapFactory.decodeByteArray(bytesCodificados, 0, 
+		    		bytesCodificados.length, options);
 		    
 		    // Calculate inSampleSize
 		    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
 		    // Decode bitmap with inSampleSize set
 		    options.inJustDecodeBounds = false;
-		    return BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
+		    //return BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
+		    return BitmapFactory.decodeByteArray(bytesCodificados, 0, 
+		    		bytesCodificados.length, options);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			return bitmapDefecto;
+		}
+		
+
 	}
 	 
 	/**

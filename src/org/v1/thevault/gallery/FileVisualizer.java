@@ -82,6 +82,8 @@ public class FileVisualizer extends Activity
     
     private File destino;
     private Button botonOcultar;
+    
+    public static int tamBuffer=1024;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -850,12 +852,13 @@ public class FileVisualizer extends Activity
 		    
 		    inStream = new FileInputStream(fichero);
             outStream = new FileOutputStream(destinoAuxiliar);
-            int tamBuffer=1024;
+            
 		    
 		    byte[] buffer = new byte[tamBuffer];
 		    List<Byte> listaBytes= new ArrayList<Byte>();
 		    byte[] byteOrigen= fichero.getAbsolutePath().getBytes();
 		    int total=byteOrigen.length;
+		    /**/
 		    for(byte b: byteOrigen)
 		    {
 		    	listaBytes.add(b);
@@ -872,7 +875,7 @@ public class FileVisualizer extends Activity
 		    	auxiliar[i]=listaBytes.get(i);
 		    }
 		    
-		    String str = new String(auxiliar, "UTF-8");
+		   /**/
            
             while ((inStream.read(buffer)) > 0)
             {

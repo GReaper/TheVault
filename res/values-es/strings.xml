@@ -30,7 +30,7 @@
     <string name="forgot_invalid_answer">Respuesta secreta incorrecta</string> 
     <!-- Vity values -->
     <string name="hide">Ocultar fotos</string>
-    <string name="unhide">Mostrar fotos</string>
+    <string name="unhide">DesOcultar fotos</string>
     <string name="newFolder">Crear una nueva carpeta</string>
     <string name="newName">Por favor, indicar el nombre</string>
     <string name="ok">Ok</string>
