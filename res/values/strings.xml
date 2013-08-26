@@ -3,7 +3,7 @@
 	
     <!-- General strings -->
     
-    <string name="app_name">TheVault</string>
+    <string name="app_name">TheVaultNoCache</string>
     <string name="action_settings">Settings</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
