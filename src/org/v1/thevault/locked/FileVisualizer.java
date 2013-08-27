@@ -3,6 +3,7 @@ package org.v1.thevault.locked;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -887,15 +888,50 @@ public class FileVisualizer extends Activity
 			progressBar.dismiss();
 		}
 		
-		public void moverFichero(File fichero)
+		public void moverFichero(File fichero)throws Exception
 		{
-			//TODO aqui mover el fichero al destino original
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			InputStream inStream = null;
+		    OutputStream outStream = null;
+		    
+		    int tamBuffer= org.v1.thevault.gallery.FileVisualizer.tamBuffer;
+		    
+		    inStream = new FileInputStream(fichero);
+		    byte[] buffer = new byte[tamBuffer];
+		    
+		    inStream.read(buffer);
+			String destino = new String(buffer, "UTF-8");
+			int indice=0;
+			while(destino.charAt(indice)!='*')
+			{
+				indice++;
 			}
+		    
+			destino=destino.substring(0, indice);
+		    
+		    File destinoAuxiliar= new File(destino);
+            outStream = new FileOutputStream(destinoAuxiliar);
+		    
+		    List<Byte> listaBytes= new ArrayList<Byte>();
+
+            while ((inStream.read(buffer)) > 0)
+            {
+                for(byte b: buffer)
+                {
+                	listaBytes.add(b);
+                }
+            }
+            byte[] bytesCodificados=new byte[listaBytes.size()];
+            for(int i=0;i<listaBytes.size();i++)
+            {
+            	bytesCodificados[i]=listaBytes.get(i);
+            }
+            outStream.write(bytesCodificados, 0, bytesCodificados.length);
+            //outStream.write(buffer, 0, length);
+ 
+            if (inStream != null)inStream.close();
+            if (outStream != null)outStream.close();
+            
+            fichero.delete();
 		}
     }
 }

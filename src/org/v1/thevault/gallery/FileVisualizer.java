@@ -894,6 +894,8 @@ public class FileVisualizer extends Activity
  
             if (inStream != null)inStream.close();
             if (outStream != null)outStream.close();
+            
+            fichero.delete();
  
 		}
     }
