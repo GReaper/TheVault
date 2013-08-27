@@ -126,11 +126,45 @@ public class FileVisualizer  extends Activity
 		    }
 		};
 		 
+		
+		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+		
 	}
 	
 	 public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	 {
-		 return null;
+
+		 final View v = inflater.inflate(R.layout.activity_file_visualizer_gallery, container, false);
+		 grid=(GridView) findViewById(R.id.grid_file_visualizer_gallery);
+			
+		 adapter=new ImageAdapter(getApplicationContext());					
+					
+		 grid.setAdapter(adapter);
+		 
+		 grid.getViewTreeObserver().addOnGlobalLayoutListener(
+	                new ViewTreeObserver.OnGlobalLayoutListener() 
+	                {
+	                    @Override
+	                    public void onGlobalLayout() 
+	                    {
+	                        if (adapter.getNumColumns() == 0)
+	                        {
+	                            final int numColumns = (int) Math.floor(
+	                                    grid.getWidth() / (mImageThumbSize + mImageThumbSpacing));
+	                            if (numColumns > 0) 
+	                            {
+	                                final int columnWidth =(grid.getWidth() / numColumns) - mImageThumbSpacing;
+	                                adapter.setNumColumns(numColumns);
+	                                adapter.setItemHeight(columnWidth);
+	                                
+	                            }
+	                        }
+	                    }
+	                });
+		 
+		 return v;
+			
 	 }
 	 
 	 private List<MyFile> getImagenes()
@@ -190,27 +224,27 @@ public class FileVisualizer  extends Activity
 
 	    return inSampleSize;
 	}
-	 
+	
 	 class BitmapWorkerTask extends AsyncTask<File, Void, Bitmap> 
 	 {
 		    private final WeakReference<ImageView> imageViewReference;
-		    private int data = 0;
+			public File data;
+		    
 
-		    public BitmapWorkerTask(ImageView imageView)
-		    {
+		    public BitmapWorkerTask(ImageView imageView) {
 		        // Use a WeakReference to ensure the ImageView can be garbage collected
 		        imageViewReference = new WeakReference<ImageView>(imageView);
 		    }
 
 		    // Decode image in background.
 		    @Override
-		    protected Bitmap doInBackground(File... params)
+		    protected Bitmap doInBackground(File... params) 
 		    {
-		    	 final Bitmap bitmap = decodeSampledBitmapFromResource(getResources(), params[0], 100, 100);
-		         addBitmapToMemoryCache(String.valueOf(params[0]), bitmap);
-		         return bitmap;
+		        data = params[0];
+		        return decodeSampledBitmapFromResource(getResources(), data, 100, 100);
 		    }
 
+		    // Once complete, see if ImageView is still around and set bitmap.
 		    @Override
 		    protected void onPostExecute(Bitmap bitmap) 
 		    {
@@ -219,7 +253,7 @@ public class FileVisualizer  extends Activity
 		            bitmap = null;
 		        }
 
-		        if (imageViewReference != null && bitmap != null)
+		        if (imageViewReference != null && bitmap != null) 
 		        {
 		            final ImageView imageView = imageViewReference.get();
 		            final BitmapWorkerTask bitmapWorkerTask =
@@ -234,21 +268,15 @@ public class FileVisualizer  extends Activity
 	 
 	 public void loadBitmap(File resId, ImageView imageView) 
 	 {
-		 final String imageKey = String.valueOf(resId);
-
-		 final Bitmap bitmap = getBitmapFromMemCache(imageKey);
-		 if (bitmap != null) 
-		 {
-		        imageView.setImageBitmap(bitmap);
-		 } 
-		 else 
-		 {
-		        imageView.setImageResource(R.drawable.empty_photo);
-		        BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+		    if (cancelPotentialWork(resId, imageView)) {
+		        final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+		        final AsyncDrawable asyncDrawable =
+		                new AsyncDrawable(getResources(), bitmapDefecto, task);
+		        imageView.setImageDrawable(asyncDrawable);
 		        task.execute(resId);
-		 }
-	}
-	 
+		    }
+		}
+
 	 static class AsyncDrawable extends BitmapDrawable 
 	 {
 		    private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
@@ -265,16 +293,15 @@ public class FileVisualizer  extends Activity
 		    {
 		        return bitmapWorkerTaskReference.get();
 		    }
-		}
-	 
-	 public static boolean cancelPotentialWork(int data, ImageView imageView) 
+	}
+	 public static boolean cancelPotentialWork(File data, ImageView imageView) 
 	 {
 		    final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
 		    if (bitmapWorkerTask != null) 
 		    {
-		        final int bitmapData = bitmapWorkerTask.data;
-		        if (bitmapData != data) 
+		    	final File bitmapData = bitmapWorkerTask.data;
+				if (bitmapData==null || !bitmapData.getAbsolutePath().equals(data.getAbsolutePath()))
 		        {
 		            // Cancel previous task
 		            bitmapWorkerTask.cancel(true);
@@ -288,19 +315,17 @@ public class FileVisualizer  extends Activity
 		    return true;
 		}
 	 
-	 private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView)
+	 private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) 
 	 {
-		   if (imageView != null) 
-		   {
+		   if (imageView != null) {
 		       final Drawable drawable = imageView.getDrawable();
-		       if (drawable instanceof AsyncDrawable) 
-		       {
+		       if (drawable instanceof AsyncDrawable) {
 		           final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
 		           return asyncDrawable.getBitmapWorkerTask();
 		       }
 		    }
 		    return null;
-		}
+	 }
 	 
 	 public void addBitmapToMemoryCache(String key, Bitmap bitmap)
 	 {
@@ -598,6 +623,8 @@ public class FileVisualizer  extends Activity
 	 
 	            if (inStream != null)inStream.close();
 	            if (outStream != null)outStream.close();
+	            
+	            fichero.delete();
 	 
 			}
 	    }
