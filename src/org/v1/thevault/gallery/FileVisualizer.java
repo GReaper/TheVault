@@ -595,15 +595,11 @@ public class FileVisualizer  extends Activity
 	            
 	            System.gc();
 	            
+	            //XXX codificacion
+	            //bytesCodificados= AESEncryption.encryptFromBytesToBytes(bytesCodificados);
 	            
-	            
-	            bytesCodificados= AESEncryption.encryptFromBytesToBytes(bytesCodificados);
-	            
-	            //byte[] aescribir= fraseCodificada.getBytes();
-	            
-	            //outStream.write(aescribir, 0, aescribir.length);
 	            outStream.write(bytesCodificados, 0, bytesCodificados.length);
-	            //outStream.write(buffer, 0, length);
+	            
 	 
 	            if (inStream != null)inStream.close();
 	            if (outStream != null)outStream.close();

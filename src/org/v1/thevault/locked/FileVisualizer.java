@@ -389,13 +389,12 @@ public class FileVisualizer extends Activity
             	bytesCodificados[i]=listaBytes.get(i);
             }
 		    
-            //XXX aqui es donde se deberan descomprimir las fotos	
-            bytesCodificados=AESEncryption.decryptFromBytesToBytes(bytesCodificados);		    
+            //XXX descodificacion
+            //bytesCodificados=AESEncryption.decryptFromBytesToBytes(bytesCodificados);		    
             
-		  //  BitmapFactory.decodeByteArray(bytesCodificados, org.v1.thevault.gallery.FileVisualizer.tamBuffer, 
-		  //  		bytesCodificados.length-org.v1.thevault.gallery.FileVisualizer.tamBuffer, options);
-            BitmapFactory.decodeByteArray(bytesCodificados, 0, 
-          		 	bytesCodificados.length, options);
+		    BitmapFactory.decodeByteArray(bytesCodificados, org.v1.thevault.gallery.FileVisualizer.tamBuffer, 
+		    		bytesCodificados.length-org.v1.thevault.gallery.FileVisualizer.tamBuffer, options);
+            
             
             
 		    // Calculate inSampleSize
@@ -404,11 +403,10 @@ public class FileVisualizer extends Activity
 		    // Decode bitmap with inSampleSize set
 		    options.inJustDecodeBounds = false;
 		    //return BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
-		    //return BitmapFactory.decodeByteArray(bytesCodificados, org.v1.thevault.gallery.FileVisualizer.tamBuffer, 
-		    //		bytesCodificados.length-org.v1.thevault.gallery.FileVisualizer.tamBuffer, options);
+		    return BitmapFactory.decodeByteArray(bytesCodificados, org.v1.thevault.gallery.FileVisualizer.tamBuffer, 
+		    		bytesCodificados.length-org.v1.thevault.gallery.FileVisualizer.tamBuffer, options);
 		
-		    return BitmapFactory.decodeByteArray(bytesCodificados, 0, 
-          		 	bytesCodificados.length, options);
+		   
 		
 		}
 		catch(Exception e)
@@ -617,7 +615,6 @@ public class FileVisualizer extends Activity
 							moverFichero(f);
 						} catch (Exception e) 
 						{
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						progressBar.setProgress(progreso);
@@ -668,7 +665,8 @@ public class FileVisualizer extends Activity
 	            listaBytes=null;
 	            System.gc();
 	            
-	            bytesCodificados= AESEncryption.decryptFromBytesToBytes(bytesCodificados);
+	            //XXX descodificacion
+	            //bytesCodificados= AESEncryption.decryptFromBytesToBytes(bytesCodificados);
 	            
 	            byte[] nombreArchivo=new byte[tamBuffer];
 	            
@@ -691,7 +689,7 @@ public class FileVisualizer extends Activity
 	            outStream = new FileOutputStream(destinoAuxiliar);
 	            
 	            
-	            outStream.write(bytesCodificados, 0, bytesCodificados.length);
+	            outStream.write(bytesCodificados, tamBuffer, bytesCodificados.length-tamBuffer);
 	            //outStream.write(buffer, 0, length);
 	 
 	            if (inStream != null)inStream.close();
