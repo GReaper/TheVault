@@ -48,6 +48,7 @@ public class FolderVisualizer extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.folder_visualizer_layout);
+		System.gc();
 		
 		listaElementos=(ListView) this.findViewById(R.id.listaSD_gallery);
 		
@@ -249,7 +250,7 @@ public class FolderVisualizer extends Activity
 					intent.putExtra("raiz", ficheroActual.getCarpeta().getAbsolutePath());
 					intent.putExtra("destino", destino.getAbsolutePath());
 					startActivity(intent);
-					
+					finish();
 				}
 			});
 			
@@ -258,5 +259,7 @@ public class FolderVisualizer extends Activity
 		
 	}
 
-
+	
+	
+	
 }

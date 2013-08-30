@@ -11,11 +11,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.classes.AESEncryption;
 import org.v1.thevault.R;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -59,6 +61,7 @@ public class FileVisualizer  extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_file_visualizer_gallery);
+		System.gc();
 		
 		Bundle extras = getIntent().getExtras();
 		ficheroRaiz= new File(extras.getString("raiz"));
@@ -73,6 +76,7 @@ public class FileVisualizer  extends Activity
 					
 		 grid.setAdapter(adapter);
 		 
+		 		 
 		 grid.getViewTreeObserver().addOnGlobalLayoutListener(
 	                new ViewTreeObserver.OnGlobalLayoutListener() 
 	                {
@@ -225,10 +229,10 @@ public class FileVisualizer  extends Activity
 	    return inSampleSize;
 	}
 	
-	 class BitmapWorkerTask extends AsyncTask<File, Void, Bitmap> 
+	 class BitmapWorkerTask extends AsyncTask<MyFile, Void, Bitmap> 
 	 {
 		    private final WeakReference<ImageView> imageViewReference;
-			public File data;
+			public MyFile data;
 		    
 
 		    public BitmapWorkerTask(ImageView imageView) {
@@ -238,7 +242,7 @@ public class FileVisualizer  extends Activity
 
 		    // Decode image in background.
 		    @Override
-		    protected Bitmap doInBackground(File... params) 
+		    protected Bitmap doInBackground(MyFile... params) 
 		    {
 		        data = params[0];
 		        return decodeSampledBitmapFromResource(getResources(), data, 100, 100);
@@ -266,7 +270,7 @@ public class FileVisualizer  extends Activity
 		    }
 		}
 	 
-	 public void loadBitmap(File resId, ImageView imageView) 
+	 public void loadBitmap(MyFile resId, ImageView imageView) 
 	 {
 		    if (cancelPotentialWork(resId, imageView)) {
 		        final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
@@ -294,14 +298,14 @@ public class FileVisualizer  extends Activity
 		        return bitmapWorkerTaskReference.get();
 		    }
 	}
-	 public static boolean cancelPotentialWork(File data, ImageView imageView) 
+	 public static boolean cancelPotentialWork(MyFile data, ImageView imageView) 
 	 {
 		    final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
 		    if (bitmapWorkerTask != null) 
 		    {
-		    	final File bitmapData = bitmapWorkerTask.data;
-				if (bitmapData==null || !bitmapData.getAbsolutePath().equals(data.getAbsolutePath()))
+		    	final MyFile bitmapData = bitmapWorkerTask.data;
+				if (bitmapData==null || !bitmapData.getFile().getAbsolutePath().equals(data.getFile().getAbsolutePath()))
 		        {
 		            // Cancel previous task
 		            bitmapWorkerTask.cancel(true);
@@ -340,7 +344,7 @@ public class FileVisualizer  extends Activity
 	    return mMemoryCache.get(key);
 	}
 	 
-	public static Bitmap decodeSampledBitmapFromResource(Resources res, File fichero,
+	public static Bitmap decodeSampledBitmapFromResource(Resources res, MyFile fichero,
 	        int reqWidth, int reqHeight) 
 	{
 
@@ -348,14 +352,14 @@ public class FileVisualizer  extends Activity
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
 	    options.inJustDecodeBounds = true;
 	    //BitmapFactory.decodeResource(res, resId, options);
-	    BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
+	    BitmapFactory.decodeFile(fichero.getFile().getAbsolutePath(),options);
 	    
 	    // Calculate inSampleSize
 	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
 	    // Decode bitmap with inSampleSize set
 	    options.inJustDecodeBounds = false;
-	    return BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
+	    return BitmapFactory.decodeFile(fichero.getFile().getAbsolutePath(),options);
 	}
 	
 	 //XXX adapter
@@ -457,7 +461,7 @@ public class FileVisualizer  extends Activity
 				
 				final MyFile myfile=getItem(position);
 
-	            loadBitmap(myfile.getFile(), viewHolder.imagenPpal);
+	            loadBitmap(myfile, viewHolder.imagenPpal);
 	            
 	            if(myfile.isSeleccionado())
 	            {
@@ -568,6 +572,8 @@ public class FileVisualizer  extends Activity
 			@Override
 			protected void onPostExecute(Void v)
 			{
+				listaImagenes= getImagenes();
+				adapter.notifyDataSetChanged();
 				progressBar.dismiss();
 			}
 			
@@ -585,9 +591,12 @@ public class FileVisualizer  extends Activity
 			    
 			    byte[] buffer = new byte[tamBuffer];
 			    List<Byte> listaBytes= new ArrayList<Byte>();
+			    
+			    /**/
+			    //añado la informacion del nombre del archivo 
 			    byte[] byteOrigen= fichero.getAbsolutePath().getBytes();
 			    int total=byteOrigen.length;
-			    /**/
+			    
 			    for(byte b: byteOrigen)
 			    {
 			    	listaBytes.add(b);
@@ -598,11 +607,7 @@ public class FileVisualizer  extends Activity
 			    	listaBytes.add(aux.getBytes()[0]);
 			    }
 			    	
-			    byte[] auxiliar= new byte[tamBuffer];
-			    for(int i=0;i<tamBuffer;i++)
-			    {
-			    	auxiliar[i]=listaBytes.get(i);
-			    }
+			    byteOrigen=null;
 			    
 			   /**/
 	           
@@ -618,6 +623,19 @@ public class FileVisualizer  extends Activity
 	            {
 	            	bytesCodificados[i]=listaBytes.get(i);
 	            }
+	            
+	            //limpieza
+	            listaBytes=null;            
+	            
+	            System.gc();
+	            
+	            
+	            
+	            bytesCodificados= AESEncryption.encryptFromBytesToBytes(bytesCodificados);
+	            
+	            //byte[] aescribir= fraseCodificada.getBytes();
+	            
+	            //outStream.write(aescribir, 0, aescribir.length);
 	            outStream.write(bytesCodificados, 0, bytesCodificados.length);
 	            //outStream.write(buffer, 0, length);
 	 
@@ -628,5 +646,14 @@ public class FileVisualizer  extends Activity
 	 
 			}
 	    }
-	    
+	   
+	 @Override
+	 public void onBackPressed()
+	 {
+		 super.onBackPressed();
+		 Intent intent = new Intent(FileVisualizer.this, FolderVisualizer.class);
+		 intent.putExtra("destino", destino.getAbsolutePath());
+		 startActivity(intent);
+		 finish();
+	 }
 }
