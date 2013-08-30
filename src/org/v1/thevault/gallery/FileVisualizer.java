@@ -55,7 +55,6 @@ public class FileVisualizer  extends Activity
     private int mImageThumbSpacing;
     private int mImageThumbSize;
     
-    private LruCache<String, Bitmap> mMemoryCache;
 
 	protected void onCreate(Bundle savedInstanceState) 
 	{
@@ -111,26 +110,7 @@ public class FileVisualizer  extends Activity
 			}
 		});
 		 
-		// Get max available VM memory, exceeding this amount will throw an
-		// OutOfMemory exception. Stored in kilobytes as LruCache takes an
-		// int in its constructor.
-		final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-
-		// Use 1/8th of the available memory for this memory cache.
-		final int cacheSize = maxMemory / 8;
-
-		mMemoryCache = new LruCache<String, Bitmap>(cacheSize) 
-		{
-			@Override
-		    protected int sizeOf(String key, Bitmap bitmap) 
-			{
-	            // The cache size will be measured in kilobytes rather than
-	            // number of items.
-	            return bitmap.getByteCount() / 1024;
-		    }
-		};
-		 
-		
+	
 		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
 		mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 		
@@ -330,21 +310,7 @@ public class FileVisualizer  extends Activity
 		    }
 		    return null;
 	 }
-	 
-	 public void addBitmapToMemoryCache(String key, Bitmap bitmap)
-	 {
-		    if (getBitmapFromMemCache(key) == null) 
-		    {
-		        mMemoryCache.put(key, bitmap);
-		    }
-	}
-
-	public Bitmap getBitmapFromMemCache(String key) 
-	{
-	    return mMemoryCache.get(key);
-	}
-	 
-	public static Bitmap decodeSampledBitmapFromResource(Resources res, MyFile fichero,
+	 public static Bitmap decodeSampledBitmapFromResource(Resources res, MyFile fichero,
 	        int reqWidth, int reqHeight) 
 	{
 

@@ -21,7 +21,6 @@ import org.v1.thevault.gallery.MyFile;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,7 +40,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -56,13 +54,7 @@ public class FileVisualizer extends Activity
 	
 	private static Bitmap bitmapDefecto;
 	private ImageAdapter adapter;
-	
-	private LruCache<String, Bitmap> mMemoryCache;
-	
-	
-	public CompressFormat compressFormat = CompressFormat.JPEG;
-    public int compressQuality =70;
-    
+
     private int mImageThumbSpacing;
     private int mImageThumbSize;
     
@@ -87,29 +79,6 @@ public class FileVisualizer extends Activity
 		 mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 		
 		//imageView= (ImageView) this.findViewById(R.id.imageViewTest);
-		
-		
-		
-		// Get max available VM memory, exceeding this amount will throw an
-	    // OutOfMemory exception. Stored in kilobytes as LruCache takes an
-	    // int in its constructor.
-	    final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-
-	    // Use 1/8th of the available memory for this memory cache.
-	    final int cacheSize = maxMemory / 8;
-
-	    mMemoryCache = new LruCache<String, Bitmap>(cacheSize) 
-	    {
-	        @Override
-	        protected int sizeOf(String key, Bitmap bitmap) 
-	        {
-	            // The cache size will be measured in kilobytes rather than
-	            // number of items.
-	        	
-	            return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
-	        }
-	    };
-		
 	  		
 		bitmapDefecto=BitmapFactory.decodeResource(getResources(), R.drawable.empty_photo);
 		
@@ -367,19 +336,7 @@ public class FileVisualizer extends Activity
 		    }
 		    return null;
 	 }
-	 
-	 public void addBitmapToMemoryCache(String key, Bitmap bitmap)
-	 {
-		    if (getBitmapFromMemCache(key) == null) 
-		    {
-		        mMemoryCache.put(key, bitmap);
-		    }
-	}
 
-	 public Bitmap getBitmapFromMemCache(String key) 
-	 {
-	    return mMemoryCache.get(key);
-	 }
 		
 	/**
 	* Metodo que carga una imagen eficientemente
