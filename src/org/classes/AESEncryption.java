@@ -113,7 +113,8 @@ public class AESEncryption
 	public static byte[] decryptFromBytesToBytes(byte[] encrypted) throws Exception 
 	{		
 		// Base64 decode encrypted string (using UTF-8) and extract bytes array
-	    byte[] decodedBytes = Base64.decode(encrypted, Base64.DEFAULT);
+	    //byte[] decodedBytes = Base64.decode(encrypted, Base64.DEFAULT);
+	    byte[] decodedBytes = encrypted;
 	    
 	    // Get IV bytes 
 		byte[] iv = new byte[16];
@@ -257,6 +258,7 @@ public class AESEncryption
 		System.arraycopy(result, 0, eresult, iv.length, result.length);
 
 	    // Return byte[] with the base64 form of the encrypted text  
-	    return Base64.encodeToString(eresult, Base64.DEFAULT).getBytes("UTF-8");
+	    //return Base64.encodeToString(eresult, Base64.DEFAULT).getBytes("UTF-8");
+	    return eresult;
 	}
 }
