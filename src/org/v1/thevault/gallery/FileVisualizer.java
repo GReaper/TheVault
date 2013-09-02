@@ -24,8 +24,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -540,6 +542,13 @@ public class FileVisualizer  extends Activity
 			{
 				listaImagenes= getImagenes();
 				adapter.notifyDataSetChanged();
+				if(Environment.getExternalStorageDirectory()!=null)
+				{
+					//refrescamos la galeria para que se oculten de verdad
+					sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+					
+				}
+				
 				progressBar.dismiss();
 			}
 			
@@ -604,6 +613,7 @@ public class FileVisualizer  extends Activity
 	            if (inStream != null)inStream.close();
 	            if (outStream != null)outStream.close();
 	            
+	          
 	            fichero.delete();
 	 
 			}
