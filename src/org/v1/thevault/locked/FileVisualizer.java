@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -375,6 +376,7 @@ public class FileVisualizer extends Activity
 		    
 		    while ((is.read(buffer)) > 0)
             {
+		    	
                 for(byte b: buffer)
                 {
                 	listaBytes.add(b);
@@ -394,8 +396,8 @@ public class FileVisualizer extends Activity
             //XXX descodificacion
             //bytesCodificados=AESEncryption.decryptFromBytesToBytes(bytesCodificados);		    
             
-		    BitmapFactory.decodeByteArray(bytesCodificados, org.v1.thevault.gallery.FileVisualizer.tamBuffer, 
-		    		bytesCodificados.length-org.v1.thevault.gallery.FileVisualizer.tamBuffer, options);
+		    BitmapFactory.decodeByteArray(bytesCodificados, 0, 
+		    		bytesCodificados.length, options);
             
             
             
@@ -405,8 +407,8 @@ public class FileVisualizer extends Activity
 		    // Decode bitmap with inSampleSize set
 		    options.inJustDecodeBounds = false;
 		    //return BitmapFactory.decodeFile(fichero.getAbsolutePath(),options);
-		    return BitmapFactory.decodeByteArray(bytesCodificados, org.v1.thevault.gallery.FileVisualizer.tamBuffer, 
-		    		bytesCodificados.length-org.v1.thevault.gallery.FileVisualizer.tamBuffer, options);
+		    return BitmapFactory.decodeByteArray(bytesCodificados, 0, 
+		    		bytesCodificados.length, options);
 		
 		   
 		
@@ -678,28 +680,18 @@ public class FileVisualizer extends Activity
 	            //XXX descodificacion
 	            //bytesCodificados= AESEncryption.decryptFromBytesToBytes(bytesCodificados);
 	            
-	            byte[] nombreArchivo=new byte[tamBuffer];
-	            
-	            for(int i=0;i<tamBuffer;i++)
-	            {
-	            	nombreArchivo[i]=bytesCodificados[i];
-	            }
-	            
-	            
-				String destino = new String(nombreArchivo, "UTF-8");
-				int indice=0;
-				while(destino.charAt(indice)!='*')
-				{
-					indice++;
-				}
-			    
-				destino=destino.substring(0, indice);
+	           
+	            String nombreCodificado=fichero.getName();
+	            nombreCodificado=nombreCodificado.substring(0,nombreCodificado.length()-4);
+	            byte[] auxiliar= Base64.decode(nombreCodificado, Base64.DEFAULT);
+				
+				String destino = new String(auxiliar, "UTF-8");	            
 			    
 			    File destinoAuxiliar= new File(destino);
 	            outStream = new FileOutputStream(destinoAuxiliar);
 	            
 	            
-	            outStream.write(bytesCodificados, tamBuffer, bytesCodificados.length-tamBuffer);
+	            outStream.write(bytesCodificados, 0, bytesCodificados.length);
 	            //outStream.write(buffer, 0, length);
 	 
 	            if (inStream != null)inStream.close();

@@ -29,6 +29,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.util.LruCache;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -554,8 +555,28 @@ public class FileVisualizer  extends Activity
 			
 			public void moverFichero(File fichero)throws Exception
 			{
-				String nombreArchivo=fichero.getName()+".lck";
+				/*
+				String nombreArchivo=fichero.getName()+".lck";			
+				
+				String bla=Base64.encodeToString(nombreArchivo.getBytes(), Base64.DEFAULT);
+				
+				byte[] auxiliar= Base64.decode(bla, Base64.DEFAULT);
+				
+				String destino = new String(auxiliar, "UTF-8");
+				
+				
 				File destinoAuxiliar= new File(destino, nombreArchivo);		
+				
+				*/
+				
+				String rutaAbsoluta= fichero.getAbsolutePath();
+				String nombreTransformado=Base64.encodeToString(rutaAbsoluta.getBytes(), Base64.DEFAULT);
+				
+				//quitamos el /n
+				nombreTransformado=nombreTransformado.substring(0, nombreTransformado.length()-1);
+			
+				String nombreArchivo=nombreTransformado+".lck";
+				File destinoAuxiliar= new File(destino, nombreArchivo);	
 				
 				InputStream inStream = null;
 			    OutputStream outStream = null;
@@ -566,26 +587,7 @@ public class FileVisualizer  extends Activity
 			    
 			    byte[] buffer = new byte[tamBuffer];
 			    List<Byte> listaBytes= new ArrayList<Byte>();
-			    
-			    /**/
-			    //añado la informacion del nombre del archivo 
-			    byte[] byteOrigen= fichero.getAbsolutePath().getBytes();
-			    int total=byteOrigen.length;
-			    
-			    for(byte b: byteOrigen)
-			    {
-			    	listaBytes.add(b);
-			    }
-			    for(int i=total;i<tamBuffer;i++)
-			    {
-			    	String aux="*";
-			    	listaBytes.add(aux.getBytes()[0]);
-			    }
-			    	
-			    byteOrigen=null;
-			    
-			   /**/
-	           
+			    	           
 	            while ((inStream.read(buffer)) > 0)
 	            {
 	                for(byte b: buffer)
@@ -600,8 +602,7 @@ public class FileVisualizer  extends Activity
 	            }
 	            
 	            //limpieza
-	            listaBytes=null;            
-	            
+	            listaBytes=null; 
 	            System.gc();
 	            
 	            //XXX codificacion
