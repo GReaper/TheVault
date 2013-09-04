@@ -51,6 +51,8 @@ public class FolderVisualizer extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.folder_lock_visualizer_layout);
 		
+		System.gc();
+		
 		listaElementos=(ListView) this.findViewById(R.id.listaSD_lock);
 		
 				
@@ -265,6 +267,7 @@ public class FolderVisualizer extends Activity
 	    });
 	    return builder.create();
 	}
+	
 	
 	
 	//XXX adapter
